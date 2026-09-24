@@ -1,0 +1,4 @@
+add 9
+grow 9 4
+grow 9 16
+show 9

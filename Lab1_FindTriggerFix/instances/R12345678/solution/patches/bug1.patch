@@ -1,0 +1,12 @@
+--- recman.c
++++ recman.c
+@@ -55,7 +55,8 @@
+ 
+ static void cmd_name(rec *r, const char *arg) {
+     char tmp[NAMELEN];
+-    strcpy(tmp, arg);
++    strncpy(tmp, arg, sizeof(tmp) - 1);
++    tmp[sizeof(tmp) - 1] = '\0';
+     memcpy(r->name, tmp, NAMELEN);
+     r->name[NAMELEN - 1] = '\0';
+     printf("name set\n");

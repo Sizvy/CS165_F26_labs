@@ -1,0 +1,5 @@
+add 5
+str 5 abcdef
+grow 5 8
+show 5
+del 5

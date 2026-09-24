@@ -1,0 +1,4 @@
+add 7
+str 7 hi
+str 7 replaced
+show 7

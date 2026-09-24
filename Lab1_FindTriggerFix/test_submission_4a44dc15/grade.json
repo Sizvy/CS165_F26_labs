@@ -1,0 +1,68 @@
+{
+  "student_id": "10",
+  "build_id": "4a44dc15",
+  "bugs": {
+    "bug1": {
+      "trigger_present": true,
+      "found": true,
+      "fixed": true,
+      "points": 3.0,
+      "vuln_signature": "stack-buffer-overflow"
+    },
+    "bug2": {
+      "trigger_present": true,
+      "found": true,
+      "fixed": true,
+      "points": 3.0,
+      "vuln_signature": "heap-buffer-overflow"
+    },
+    "bug3": {
+      "trigger_present": true,
+      "found": true,
+      "fixed": true,
+      "points": 3.0,
+      "vuln_signature": "heap-use-after-free"
+    },
+    "bug4": {
+      "trigger_present": true,
+      "found": true,
+      "fixed": true,
+      "points": 3.0,
+      "vuln_signature": "heap-buffer-overflow"
+    },
+    "bug5": {
+      "trigger_present": true,
+      "found": true,
+      "fixed": true,
+      "points": 3.0,
+      "vuln_signature": "SEGV"
+    }
+  },
+  "notes": [],
+  "functional_ok": true,
+  "functional_detail": [
+    {
+      "test": "f1.txt",
+      "match": true
+    },
+    {
+      "test": "f2.txt",
+      "match": true
+    },
+    {
+      "test": "f3.txt",
+      "match": true
+    },
+    {
+      "test": "f4.txt",
+      "match": true
+    },
+    {
+      "test": "f5.txt",
+      "match": true
+    }
+  ],
+  "autograded_total": 15.0,
+  "autograded_max": 15.0,
+  "reminder": "Add: station check (3) + submission hygiene (2) = /20."
+}

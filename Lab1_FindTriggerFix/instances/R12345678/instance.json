@@ -1,0 +1,33 @@
+{
+  "student_id": "R12345678",
+  "namelen": 24,
+  "maxrec": 64,
+  "filler": 2,
+  "build_id": "7d5c5d89",
+  "sigs": {
+    "bug1": [
+      "stack-buffer-overflow"
+    ],
+    "bug2": [
+      "heap-buffer-overflow"
+    ],
+    "bug3": [
+      "heap-use-after-free"
+    ],
+    "bug4": [
+      "heap-buffer-overflow"
+    ],
+    "bug5": [
+      "SEGV",
+      "unknown-crash",
+      "null"
+    ]
+  },
+  "fix_anchors": {
+    "bug1": "    strcpy(tmp, arg);",
+    "bug2": "    strcpy(r->str + r->slen, arg);",
+    "bug3": "    free(r);",
+    "bug4": "    unsigned int bytes = (unsigned int)n * sizeof(int);",
+    "bug5": "    printf(\"id=%d name=%s\\n\", r->id, r->name);"
+  }
+}

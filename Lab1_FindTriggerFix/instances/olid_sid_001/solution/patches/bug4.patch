@@ -1,0 +1,12 @@
+--- recman.c
++++ recman.c
+@@ -76,7 +76,8 @@
+ }
+ 
+ static void cmd_grow(rec *r, int n) {
+-    unsigned int bytes = (unsigned int)n * sizeof(int);
++    if (n < 0 || (size_t)n > (size_t)16 * 1024 * 1024) { printf("(too big)\n"); return; }
++    size_t bytes = (size_t)n * sizeof(int);
+     int *p = malloc(bytes);
+     for (int i = 0; i < n; i++) p[i] = i;
+     free(r->arr);

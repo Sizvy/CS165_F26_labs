@@ -1,0 +1,33 @@
+{
+  "student_id": "alice.netid",
+  "namelen": 28,
+  "maxrec": 48,
+  "filler": 3,
+  "build_id": "ce799696",
+  "sigs": {
+    "bug1": [
+      "stack-buffer-overflow"
+    ],
+    "bug2": [
+      "heap-buffer-overflow"
+    ],
+    "bug3": [
+      "heap-use-after-free"
+    ],
+    "bug4": [
+      "heap-buffer-overflow"
+    ],
+    "bug5": [
+      "SEGV",
+      "unknown-crash",
+      "null"
+    ]
+  },
+  "fix_anchors": {
+    "bug1": "    strcpy(tmp, arg);",
+    "bug2": "    strcpy(r->str + r->slen, arg);",
+    "bug3": "    free(r);",
+    "bug4": "    unsigned int bytes = (unsigned int)n * sizeof(int);",
+    "bug5": "    printf(\"id=%d name=%s\\n\", r->id, r->name);"
+  }
+}

@@ -1,0 +1,6 @@
+add 2
+add 3
+name 2 bob
+name 3 carol
+link 2 3
+show 3

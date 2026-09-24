@@ -1,0 +1,13 @@
+--- recman.c
++++ recman.c
+@@ -70,7 +70,9 @@
+ 
+ static void cmd_app(rec *r, const char *arg) {
+     if (!r->str) { printf("(no str)\n"); return; }
+-    strcpy(r->str + r->slen, arg);
++    size_t add = strlen(arg);
++    r->str = realloc(r->str, r->slen + add + 1);
++    memcpy(r->str + r->slen, arg, add + 1);
+     r->slen += strlen(arg);
+     printf("appended\n");
+ }
