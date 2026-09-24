@@ -48,10 +48,16 @@ add the station check (3) and submission hygiene (2) for the /20.
 
 ## 4. Requirements (student side)
 
-- A Linux or macOS machine (or the course VM `cs165.cs.ucr.edu`)
-- `gcc` (or `clang`) with AddressSanitizer support — standard on Linux/macOS
-- `make`
-- `python3` (standard library only) to run the generator
+- `gcc` (or `clang`) with AddressSanitizer support, `make`, and `python3`
+  (standard library only).
+- **Linux or macOS:** works out of the box — these tools ship with the system or
+  install in one step.
+- **Windows:** do the lab in **WSL2** (install Ubuntu from the Microsoft Store,
+  then `sudo apt install gcc make python3`) or by SSH-ing into the course VM
+  `cs165.cs.ucr.edu`. Native Windows compilers (MinGW/MSVC) are **not** supported —
+  AddressSanitizer, which this lab relies on, does not work reliably there.
+- The course VM `cs165.cs.ucr.edu` already has everything and is the safest option
+  for any machine.
 
 Build and run:
 
