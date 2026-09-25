@@ -46,6 +46,7 @@ static void cmd_add(int id) {
     if (id < 0 || id >= MAXREC) { printf("(bad id)\n"); return; }
     if (table[id]) { printf("(exists)\n"); return; }
     rec *r = calloc(1, sizeof(rec));
+    if (!r) { printf("(oom)\n"); return; }
     r->id = id;
     r->used = 1;
     table[id] = r;
@@ -61,10 +62,13 @@ static void cmd_name(rec *r, const char *arg) {
 }
 
 static void cmd_str(rec *r, const char *arg) {
+    size_t slen = strlen(arg);
+    char *p = malloc(slen + 1);
+    if (!p) { printf("(oom)\n"); return; }
+    memcpy(p, arg, slen + 1);
     free(r->str);
-    r->slen = strlen(arg);
-    r->str = malloc(r->slen + 1);
-    memcpy(r->str, arg, r->slen + 1);
+    r->str = p;
+    r->slen = slen;
     printf("str set (%zu)\n", r->slen);
 }
 
@@ -78,6 +82,7 @@ static void cmd_app(rec *r, const char *arg) {
 static void cmd_grow(rec *r, int n) {
     unsigned int bytes = (unsigned int)n * sizeof(int);
     int *p = malloc(bytes);
+    if (!p && bytes != 0) { printf("(oom)\n"); return; }
     for (int i = 0; i < n; i++) p[i] = i;
     free(r->arr);
     r->arr = p;
@@ -109,6 +114,16 @@ static void cmd_show(rec *r) {
     if (r->link) printf("  link->name=%s\n", r->link->name);
 }
 
+static void cleanup(void) {
+    for (int i = 0; i < MAXREC; i++) {
+        if (!table[i]) continue;
+        free(table[i]->str);
+        free(table[i]->arr);
+        free(table[i]);
+        table[i] = NULL;
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc < 2) { fprintf(stderr, "usage: %s <script>\n", argv[0]); return 2; }
     FILE *f = fopen(argv[1], "r");
@@ -125,15 +140,28 @@ int main(int argc, char **argv) {
         const char *arg = line + off;
 
         if      (strcmp(cmd, "add")  == 0) cmd_add(a);
-        else if (strcmp(cmd, "name") == 0) cmd_name(lookup(a), arg);
-        else if (strcmp(cmd, "str")  == 0) cmd_str(lookup(a), arg);
-        else if (strcmp(cmd, "app")  == 0) cmd_app(lookup(a), arg);
-        else if (strcmp(cmd, "grow") == 0) cmd_grow(lookup(a), atoi(arg));
+        else if (strcmp(cmd, "name") == 0) {
+            rec *r = lookup(a); if (!r) { printf("(none)\n"); continue; }
+            cmd_name(r, arg);
+        }
+        else if (strcmp(cmd, "str")  == 0) {
+            rec *r = lookup(a); if (!r) { printf("(none)\n"); continue; }
+            cmd_str(r, arg);
+        }
+        else if (strcmp(cmd, "app")  == 0) {
+            rec *r = lookup(a); if (!r) { printf("(none)\n"); continue; }
+            cmd_app(r, arg);
+        }
+        else if (strcmp(cmd, "grow") == 0) {
+            rec *r = lookup(a); if (!r) { printf("(none)\n"); continue; }
+            cmd_grow(r, atoi(arg));
+        }
         else if (strcmp(cmd, "link") == 0) { sscanf(arg, "%d", &b); cmd_link(a, b); }
         else if (strcmp(cmd, "del")  == 0) cmd_del(a);
         else if (strcmp(cmd, "show") == 0) cmd_show(lookup(a));
         else printf("(unknown cmd)\n");
     }
     fclose(f);
+    cleanup();
     return 0;
 }

@@ -28,7 +28,7 @@ Build it two ways with the supplied `Makefile`:
 
 ```
 make          # builds with AddressSanitizer (ASan) — use this to catch bugs
-make plain    # builds without ASan (how the course VM builds it by default)
+make plain    # optionally builds a non-ASan binary as ./recman-plain
 ```
 
 Run it on one of the sample scripts:
@@ -84,7 +84,7 @@ triggers/bug1.txt ... bug5.txt
 writeup.md               your five explanations + ASan snippets
 ```
 
-`make tar` builds this for you.
+`make tar` builds `lab1-submission.tgz` for you.
 
 ---
 

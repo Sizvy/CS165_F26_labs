@@ -64,4 +64,8 @@ Build and run:
 ```
 make                        # builds with AddressSanitizer
 ./recman tests/sample1.txt  # run the program on a command script
+
+# Optional: build a separate, non-ASan binary without replacing ./recman
+make plain
+./recman-plain tests/sample1.txt
 ```

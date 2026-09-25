@@ -34,7 +34,10 @@ FIXES = {
     "bug2": (
         "    strcpy(r->str + r->slen, arg);",
         "    size_t add = strlen(arg);\n"
-        "    r->str = realloc(r->str, r->slen + add + 1);\n"
+        "    if (add > (size_t)-1 - r->slen - 1) { printf(\"(too long)\\n\"); return; }\n"
+        "    char *p = realloc(r->str, r->slen + add + 1);\n"
+        "    if (!p) { printf(\"(oom)\\n\"); return; }\n"
+        "    r->str = p;\n"
         "    memcpy(r->str + r->slen, arg, add + 1);",
     ),
     "bug3": (

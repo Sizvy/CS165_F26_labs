@@ -1,10 +1,11 @@
 CS 165 - Lab 1 : generating your program
 =========================================
 
-1. Keep these three files together in one folder:
+1. Keep these four files together in one folder:
        make_recman.py
        recman_common.py
        recman_base.c.tmpl
+       README_student.txt
 
 2. Generate YOUR copy of the program (use your SID/NetID exactly as told):
        python3 make_recman.py <your-student-id>
