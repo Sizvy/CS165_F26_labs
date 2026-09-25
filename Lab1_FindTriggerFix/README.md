@@ -16,8 +16,8 @@ nobody walks into the graded week cold. (Full script: `prep/Ungraded_prep_guide.
 ## 2. How students generate their assignment
 
 Each student generates their own copy from their student id — no per-student files
-to hand out. Give them the `student_kit/` folder (four files: `make_recman.py`,
-`recman_common.py`, `recman_base.c.tmpl`, `README_student.txt`). They run:
+to hand out. Give them the `student_kit/` folder (`make_recman.py`,
+`recman_common.py`, and `recman_base.c.tmpl`) along with the lab handout. They run:
 
 ```
 python3 make_recman.py <their-student-id>
