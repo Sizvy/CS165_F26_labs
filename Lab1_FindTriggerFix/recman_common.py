@@ -45,22 +45,27 @@ def render_student(params, base_path=None):
                .replace("@@BUILD_ID@@", params["build_id"])
                .replace("@@FILLER@@",  filler))
 
-MAKEFILE = """CC      = gcc
-CFLAGS  = -g -O0 -fsanitize=address -fno-omit-frame-pointer -Wall
-TARGET  = recman
-SRC     = recman.c
+MAKEFILE = """CC           = gcc
+ASAN_CFLAGS  = -g -O0 -fsanitize=address -fno-omit-frame-pointer -Wall
+PLAIN_CFLAGS = -g -O0 -Wall
+ASAN_TARGET  = recman
+PLAIN_TARGET = recman-plain
+SRC          = recman.c
 
-all: $(TARGET)
+all: $(ASAN_TARGET)
 
-$(TARGET): $(SRC)
-\t$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
+$(ASAN_TARGET): $(SRC)
+\t$(CC) $(ASAN_CFLAGS) -o $(ASAN_TARGET) $(SRC)
 
-# build without the sanitizer (closer to the course VM's default build)
-plain: $(SRC)
-\t$(CC) -g -O0 -Wall -o $(TARGET) $(SRC)
+# Keep this separate from recman so `make plain` can never silently replace
+# the AddressSanitizer binary students use for the lab.
+plain: $(PLAIN_TARGET)
+
+$(PLAIN_TARGET): $(SRC)
+\t$(CC) $(PLAIN_CFLAGS) -o $(PLAIN_TARGET) $(SRC)
 
 clean:
-\trm -f $(TARGET)
+\trm -f $(ASAN_TARGET) $(PLAIN_TARGET)
 
 # bundle your submission: patched source, triggers, and writeup
 tar:
