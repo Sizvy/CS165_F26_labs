@@ -1,28 +1,18 @@
-/* CS 165 - Ungraded prep lab: PRACTICE program (students drive).
- * TWO planted bugs, one per subcommand, so each can be triggered on its own:
- *
- *   make
- *   ./practice greet <name>   # long name -> STACK buffer overflow
- *   ./practice note           # -> USE-AFTER-FREE
- *
- * Goal: trigger each under ASan, read the report, then fix each with a
- * minimal change. (These are different from the five graded bugs.)
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 static void greet(const char *name) {
-    char buf[16];                 /* fixed-size stack buffer */
-    strcpy(buf, name);            /* BUG A: no bound -> stack overflow for long name */
+    char buf[16];                 
+    strcpy(buf, name);            
     printf("Hello, %s!\n", buf);
 }
 
 static void note_demo(void) {
     char *note = malloc(32);
     strcpy(note, "remember to free me");
-    free(note);                   /* freed here ... */
-    printf("note = %s\n", note);  /* BUG B: ... but read after free -> use-after-free */
+    free(note);                   
+    printf("note = %s\n", note); 
 }
 
 int main(int argc, char **argv) {

@@ -1,10 +1,3 @@
-/* CS 165 - Ungraded prep lab: DEMO program (instructor-led).
- * ONE obvious heap buffer overflow, for the live walkthrough.
- *
- *   make            # build with AddressSanitizer
- *   ./demo hi       # benign  -> prints, no crash
- *   ./demo AAAAAAAAAAAAAAAAAAAA   # overflow -> ASan heap-buffer-overflow
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
