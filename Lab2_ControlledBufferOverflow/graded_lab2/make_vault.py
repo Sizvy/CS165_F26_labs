@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Generate a personal CS 165 Lab 2 instance."""
+"""Generate your personal CS 165 Lab 2 (graded) instance.
+
+    python3 make_vault.py <your-student-id>
+
+This writes vault.c, Makefile, and tests/ into the current directory, seeded
+from your student ID.  Your note size, padding, and win() token are unique to
+you, so your offsets differ from everyone else's.
+"""
 import os
 import sys
 
@@ -14,7 +21,7 @@ def main():
     params = C.seeded(student_id)
     C.write_student_files(".", params)
     print(f"Generated vault.c for '{student_id}' (build {params['build_id']}).")
-    print("Next: make && ./vault < tests/accept.bin")
+    print("Next:  make  &&  make test")
 
 
 if __name__ == "__main__":
