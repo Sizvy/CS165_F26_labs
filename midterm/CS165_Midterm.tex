@@ -118,7 +118,7 @@
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt,topsep=4pt]
   \item Closed book. No notes, calculators, phones, or other devices.
   \item \textbf{Six questions, each worth 20 points. Answer any FIVE}, for a maximum of 100.
-  \item Tick the five you want marked in the box below. If you tick more than five, only the first five ticked are marked.
+  \item Tick the five you want marked in the box below. If you tick more than five, the first five answers will be considered.
   \item Answer in the space provided; continue on the back of the page if you need to.
   \item Short answers are expected --- a few sentences, or a labeled sketch, is enough.
   \item Points are shown for each part and are a good guide to how much to write.
@@ -180,7 +180,7 @@ Assume the compiler places \texttt{authed} immediately above \texttt{buf}, then 
         \item \pts{5} Show your arithmetic for each: \textbf{(i)} how many bytes of filler precede the saved return address, and \textbf{(ii)} the smallest \texttt{len} that overwrites its first byte.
         \answer{(i) $64$ (\texttt{buf}) $+\ 4$ (\texttt{authed}) $+\ 4$ (saved frame pointer) $=\mathbf{72}$ bytes of filler. (ii) The 73rd byte is the first byte of the saved return address, so the smallest \texttt{len} is $\mathbf{73}$. \emph{2 for (i), 3 for (ii); full credit either way if the arithmetic is shown and the arithmetic shown.}}
 
-        \item \pts{6} The attacker chooses how many bytes to send. Describe two \emph{different} attacks this one bug allows, and say what the attacker achieves in each. For the one that redirects execution: does DEP/NX prevent the \emph{overwrite}?
+        \item \pts{6} The attacker chooses how many bytes to send. Describe two \emph{different} attacks this one bug allows, and say what the attacker achieves in each. Does DEP/NX prevent the \emph{overwrite}? If it does, then how? If it does not, then why not?
         \answer{\textbf{Short overflow:} reach \texttt{authed} and set it nonzero, so \texttt{grant\_access()} runs although authentication failed --- a \emph{data-only} attack with no control-flow hijack at all. \textbf{Long overflow:} reach and overwrite the saved return address, so the attacker chooses where the function returns --- a full control-flow hijack. \textbf{DEP/NX does \emph{not} prevent the overwrite:} NX governs whether a page may be \emph{executed}, not whether it may be written, so the overwrite and the hijacked \texttt{ret} both still happen; NX only blocks the classic follow-on of executing injected shellcode, and code reuse gets around that anyway. \emph{2 per attack, 2 for ``no'' with the execute-vs-write reason.}}
 
         \item \pts{3} Recall that memory errors are classified as \emph{spatial}, \emph{temporal} or \emph{type}. Which kind is the bug in \texttt{handle()}, and why? Give one example each of the other two kinds.
@@ -239,7 +239,7 @@ Instead of reusing existing code, the attacker writes their own machine instruct
         \answer{\texttt{free()} returns a heap allocation to the allocator so the space can be reused. A dangling pointer still points at memory that has already been freed. \emph{2 + 2.}}
 
         
-        \item \pts{9} An attacker overflows the chunk before chunk \texttt{P} and so controls \texttt{P}'s \texttt{fd} and \texttt{bk}. (i) What does the unlink performed by \texttt{free(P)} hand them? (ii) Name \emph{two distinct} targets they could overwrite with it, and say what each one gives them. (iii) State the check ``safe unlinking'' adds, and why forged pointers fail it.
+        \item \pts{9} An attacker overflows the chunk before chunk \texttt{P} and so controls \texttt{P}'s \texttt{fd} (forward pointer) and \texttt{bk} (backward pointer). (i) What does the unlink performed by \texttt{free(P)} hand them? (ii) Name \emph{two distinct} targets they could overwrite with it, and say what each one gives them. (iii) State the check ``safe unlinking'' adds, and why forged pointers fail it.
         \answer{(i) A \textbf{write-what-where} --- an arbitrary write of a chosen value to a chosen address, because the splice writes using the attacker's \texttt{fd} (value) and \texttt{bk} (target, plus a fixed offset, as on the Lecture 7 slide). (ii) Any two of: a \textbf{function pointer} in a live object (Lecture 7) --- the next indirect call through it is redirected; a \textbf{saved return address} on the stack (Lecture 5) --- the next \texttt{ret} goes to the attacker's address. Also accept a \textbf{GOT entry}, though the GOT is not covered in Lectures 1--10, so do not expect it. (iii) Safe unlinking asserts the list is consistent around \texttt{P}: \texttt{P->fd->bk == P} and \texttt{P->bk->fd == P}. Forged \texttt{fd}/\texttt{bk} cannot satisfy both at once, so \texttt{free()} detects the tampering and aborts. \emph{3 for write-what-where, 3 for two targets with their effects, 3 for the invariant and why it fails.}}
 
         \item \pts{7} A use-after-free leaves a stale pointer \texttt{b}. Explain why such a bug is often \emph{not} exploitable as it stands, and what the attacker does to make it reliable.
