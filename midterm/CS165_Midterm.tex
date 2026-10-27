@@ -1,0 +1,270 @@
+% !TEX program = xelatex
+% !TEX TS-program = xelatex
+% Best with XeLaTeX or LuaLaTeX (modern fonts); pdfLaTeX also works, with Helvetica.
+%   Student exam:     xelatex CS165_Midterm.tex
+%   Solutions:        xelatex -jobname=CS165_Midterm_sol "\def\withsol{}\input{CS165_Midterm.tex}"
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=0.95in,top=0.9in,bottom=0.9in]{geometry}
+\usepackage{iftex}
+\usepackage[shortlabels]{enumitem}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage[hyphens]{url}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{ragged2e}
+\usepackage{needspace}
+\usepackage{lastpage}
+
+% ---- fonts: first one available wins -----------------------------------
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \IfFileExists{inter.sty}{\usepackage[sfdefault]{inter}}{\usepackage[scaled=0.95]{helvet}}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{Inter}{\setmainfont{Inter}[Scale=0.95,BoldFont={Inter SemiBold},BoldItalicFont={Inter SemiBold Italic}]}{%
+    \IfFontExistsTF{Helvetica Neue}{\setmainfont{Helvetica Neue}}{%
+      \setmainfont{TeX Gyre Heros}}}
+  \IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.88]}{%
+    \IfFontExistsTF{DejaVu Sans Mono}{\setmonofont{DejaVu Sans Mono}[Scale=0.85]}{}}
+\fi
+
+% ---- colours ------------------------------------------------------------
+\definecolor{ucrblue}{HTML}{003DA5}
+\definecolor{ucrgold}{HTML}{F1AB00}
+\definecolor{ink}{HTML}{1F2430}
+\definecolor{muted}{HTML}{6B7280}
+\definecolor{ansbg}{HTML}{EEF3FA}
+\definecolor{ansfg}{HTML}{14365F}
+\color{ink}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\linespread{1.12}
+\setlist{itemsep=3pt,topsep=4pt}
+\setlist[enumerate,1]{label=\textcolor{ucrblue}{\bfseries(\alph*)},leftmargin=2.2em,before={\interlinepenalty=10000}}
+\setlist[enumerate,2]{label=(\roman*),leftmargin=2em,before={\interlinepenalty=10000}}
+
+% ---- solutions toggle ---------------------------------------------------
+% ---- answer space ------------------------------------------------------
+% Each question ends with \gap: the rest of that page is left blank for the
+% answer, and the next question starts on a fresh page.
+
+\newif\ifcomment
+\ifdefined\withsol \commenttrue \else \commentfalse \fi
+
+\newcommand{\ansfont}{\color{ansfg}\raggedright\hyphenpenalty=10000\relax}
+\newtcolorbox{ansbox}{enhanced, breakable, colback=ansbg, colframe=ansbg, arc=3pt,
+  boxrule=0pt, left=8pt, right=8pt, top=5pt, bottom=5pt, before skip=4pt, after skip=6pt,
+  fontupper=\ansfont}
+\ifcomment
+  \newcommand{\answer}[1]{\begin{ansbox}{\bfseries Answer.}\ #1\end{ansbox}}
+  \newcommand{\note}[1]{\begin{ansbox}{\bfseries Note.}\ #1\end{ansbox}}
+  \newcommand{\solutionstag}{\quad\textcolor{ucrgold}{\bfseries Solutions}}
+  \newcommand{\gap}{}
+  \newcommand{\lastgap}{}
+\else
+  \newcommand{\answer}[1]{}
+  \newcommand{\note}[1]{}
+  \newcommand{\solutionstag}{}
+  % an invisible box of the given height: LaTeX cannot split it, and \nobreak
+  % stops a page break between the prompt and its space, so they move together
+  \newcommand{\gap}{\par\vfill\newpage}
+  \newcommand{\lastgap}{\par\vfill}
+\fi
+
+% ---- question heading, with points -------------------------------------
+\newcounter{qn}
+\newcommand{\Q}[2][]{%
+  \par\addvspace{14pt}\stepcounter{qn}%
+  \noindent\begin{tikzpicture}[baseline=(n.base)]
+    \node[circle, fill=ucrblue, text=white, font=\bfseries\small, minimum size=1.5em, inner sep=0pt] (n) {\theqn};
+  \end{tikzpicture}\hspace{0.6em}{\large\bfseries #2}%
+  \hfill{\small\color{muted}\textbf{#1}}\par\nopagebreak\vspace{3pt}}
+\newcommand{\pts}[1]{\textcolor{muted}{\small[#1 pts]}}
+
+% ---- header / footer ----------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[L]{\small\color{muted}CS 165 Computer Security \textbullet\ Midterm}
+\fancyfoot[C]{\small\color{muted}\thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\small\color{muted}Nov 2, 2026}
+\fancypagestyle{first}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{\small\color{muted}\thepage\ of \pageref{LastPage}}}
+
+\AtBeginDocument{\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000}
+\begin{document}
+\thispagestyle{first}
+
+{\color{ucrblue}\small\bfseries\MakeUppercase{CS 165 Computer Security}\ \textcolor{muted}{\textbullet\ UC Riverside \textbullet\ Fall 2026}} \textbullet\ {\color{ucrblue}\small\bfseries\MakeUppercase{Midterm}}\par
+\vspace{6pt}
+%{\fontsize{26}{30}\selectfont\bfseries Midterm\solutionstag}\par
+\vspace{7pt}
+%{\large\color{muted}Monday, November 2 \textbullet\ 75 minutes \textbullet\ 100 points \textbullet\ Lectures 1--9}\par
+%\vspace{8pt}
+%{\color{ucrgold}\rule{\linewidth}{1.2pt}}\par
+%\vspace{6pt}
+
+\ifcomment\else
+{\large Name: \rule{7cm}{0.5pt}\qquad SID: \rule{4cm}{0.5pt}}\par
+\vspace{10pt}
+\fi
+
+\textbf{Instructions}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt,topsep=4pt]
+  \item Closed book. No notes, calculators, phones, or other devices.
+  \item \textbf{Six questions, each worth 20 points. Answer any FIVE}, for a maximum of 100.
+  \item Tick the five you want marked in the box below. If you tick more than five, only the first five ticked are marked.
+  \item Answer in the space provided; continue on the back of the page if you need to.
+  \item Short answers are expected --- a few sentences, or a labeled sketch, is enough.
+  \item Points are shown for each part and are a good guide to how much to write.
+  \item Write as clearly as possible; if I can't understand your writing, you will lose points.
+  \item Always (concisely) justify your answers.
+\end{itemize}
+
+\begin{tcolorbox}[enhanced, colback=white, colframe=ucrblue, boxrule=0.9pt, arc=3pt,
+  left=10pt, right=10pt, top=7pt, bottom=7pt, before skip=10pt, after skip=10pt]
+{\bfseries Mark these five questions} \hfill {\small\color{muted}tick up to five}\par\vspace{6pt}
+{\large $\square$\ \textbf{1} \hfill $\square$\ \textbf{2} \hfill $\square$\ \textbf{3} \hfill $\square$\ \textbf{4} \hfill $\square$\ \textbf{5} \hfill $\square$\ \textbf{6}}\par
+\vspace{4pt}{\small\color{muted}If you tick nothing, the first five questions you attempt will be marked.}
+\end{tcolorbox}
+
+
+\newpage
+
+%----------------------------------------------------------------------
+\Q[20 points]{Threat models and attack surface}
+A public server runs \texttt{photod}, a thumbnail service that (1)~reads images uploaded by any user, (2)~reads a watermark file from a path only \texttt{root} can write, and (3)~writes finished thumbnails into a web directory. Its image parser contains a known out-of-bounds write.
+
+    \begin{enumerate}[(a)]
+        \item \pts{3} Name the three properties of the \textbf{CIA triad}.
+        \answer{\textbf{Confidentiality}, \textbf{Integrity}, \textbf{Availability}. \emph{1 each.}}
+
+        
+        \item \pts{7} Recall that a vulnerability is a flaw that is \emph{accessible} to an adversary who can \emph{exploit} it. For an adversary on the Internet, is the parser bug a vulnerability when reached by the path in (1)? What about when reached by path (2)? Justify each answer in terms of accessibility.
+        \answer{\textbf{Path (1): yes, a vulnerability.} Any Internet user can upload an image, so the adversary directly supplies the input that drives the flawed parser --- the flaw is accessible, and an out-of-bounds write can be used to violate security. \textbf{Path (2): no, not for this adversary.} The same flaw is there, but only \texttt{root} can write the watermark file, so an Internet adversary cannot supply the input that triggers it; it is not accessible, so it is a flaw but not a vulnerability under this threat model. \emph{3 points per path for the correct verdict with an accessibility-based justification, 1 for noting it is the same flaw and only the threat model differs, and only the threat model differs.}}
+
+        \item \pts{4} Recall that the \emph{attack surface} is the set of system calls a program makes that access adversary-modifiable resources. Which of (1)--(3) are on it here?
+        \answer{Only \textbf{(1)} is on the attack surface: the uploaded image is a resource the adversary can modify. (2) is off it because the watermark file is root-only, and (3) is off it because the thumbnail directory is not adversary-modifiable in this threat model --- accept either justification for (3): that the thumbnail directory is not an adversary-modifiable resource, or that the call receives no adversary input (Lecture 2 states the test both ways). \emph{2 for identifying (1) alone, 2 for the justification.}}
+
+        \item \pts{6} The Morris worm (1988) hijacked \texttt{fingerd} through a buffer overflow and copied itself from host to host, reinfecting machines many times over. It stole no data and modified none. \textbf{(i)} Which of confidentiality, integrity and availability did it mainly violate, and why? \textbf{(ii)} What changed in commercial systems as a result?
+        \answer{(i) Mainly \textbf{availability}: the worm stole and altered no data, but repeatedly reinfecting the same machines consumed their resources until they ground to a halt --- an Internet-scale denial of service. Credit also for noting it violated the \textbf{integrity of the \texttt{fingerd} process}, which ran the worm's code instead of its own, and that password cracking brushes against confidentiality. (ii) Strikingly little: there were \textbf{few tangible security changes in commercial systems}. Morris was punished and blame was assigned to him personally; the one real exception was a push in \textbf{network security research}, and systems went on to take \emph{more} risks (for example executable email attachments). \emph{3 for availability with the denial-of-service reasoning, 3 for ``almost nothing changed'' --- accept the research exception or the increased risk-taking as the detail.}}
+    \end{enumerate}
+    \gap
+
+%----------------------------------------------------------------------
+\Q[20 points]{Stack overflow}
+This 32-bit function is compiled \textbf{without} a stack protector, and \texttt{req} and \texttt{len} are attacker-controlled:
+\begin{verbatim}
+void handle(char *req, int len) {
+    int authed = 0;
+    char buf[64];
+    memcpy(buf, req, len);
+    if (authed) grant_access();
+}
+\end{verbatim}
+Assume the compiler places \texttt{authed} immediately above \texttt{buf}, then the saved frame pointer (4 bytes), then the saved return address (4 bytes).
+
+    \begin{enumerate}[(a)]
+        \item \pts{3} In one short sentence, what is the main idea of a \textbf{buffer overflow}?
+        \answer{Writing (or reading) past the end of a buffer, into memory that belongs to something else. \emph{3; accept any answer conveying ``access outside the bounds of the object''.}}
+
+        
+        \item \pts{3} In which direction does \texttt{memcpy} write relative to \texttt{buf}, and in what order does a growing overflow reach the other three items?
+        \answer{The stack grows toward \emph{low} addresses, but a copy into \texttt{buf} writes toward \emph{high} addresses. So a growing overflow reaches \texttt{authed} first, then the saved frame pointer, then the saved return address. \emph{2 for the write direction (and that it is the opposite of stack growth), 1 for the order.}}
+
+        \item \pts{5} Show your arithmetic for each: \textbf{(i)} how many bytes of filler precede the saved return address, and \textbf{(ii)} the smallest \texttt{len} that overwrites its first byte.
+        \answer{(i) $64$ (\texttt{buf}) $+\ 4$ (\texttt{authed}) $+\ 4$ (saved frame pointer) $=\mathbf{72}$ bytes of filler. (ii) The 73rd byte is the first byte of the saved return address, so the smallest \texttt{len} is $\mathbf{73}$. \emph{2 for (i), 3 for (ii); full credit either way if the arithmetic is shown and the arithmetic shown.}}
+
+        \item \pts{6} The attacker chooses how many bytes to send. Describe two \emph{different} attacks this one bug allows, and say what the attacker achieves in each. For the one that redirects execution: does DEP/NX prevent the \emph{overwrite}?
+        \answer{\textbf{Short overflow:} reach \texttt{authed} and set it nonzero, so \texttt{grant\_access()} runs although authentication failed --- a \emph{data-only} attack with no control-flow hijack at all. \textbf{Long overflow:} reach and overwrite the saved return address, so the attacker chooses where the function returns --- a full control-flow hijack. \textbf{DEP/NX does \emph{not} prevent the overwrite:} NX governs whether a page may be \emph{executed}, not whether it may be written, so the overwrite and the hijacked \texttt{ret} both still happen; NX only blocks the classic follow-on of executing injected shellcode, and code reuse gets around that anyway. \emph{2 per attack, 2 for ``no'' with the execute-vs-write reason.}}
+
+        \item \pts{3} Recall that memory errors are classified as \emph{spatial}, \emph{temporal} or \emph{type}. Which kind is the bug in \texttt{handle()}, and why? Give one example each of the other two kinds.
+        \answer{The bug in \texttt{handle()} is a \textbf{spatial} error: \texttt{memcpy} writes outside the bounds of \texttt{buf}. \textbf{Temporal} --- the object is used at the wrong time: a use-after-free (writing through a pointer after \texttt{free()}), or a use-before-initialization (reading a local never assigned to). \textbf{Type} --- the same bytes read through the wrong type: a \texttt{union} field written as a float and read as a pointer, or a bad cast. \emph{1 for spatial with the reason, 1 for each valid other example.}}
+    \end{enumerate}
+    \gap
+
+%----------------------------------------------------------------------
+\Q[20 points]{Return-oriented programming}
+NX stops shellcode, and often no single library function does what you want. ROP chains short sequences (``gadgets'') that each end in \texttt{ret}. Suppose you have found:
+\begin{verbatim}
+g1:  pop eax ; ret
+g2:  pop ebx ; ret
+g3:  mov [ebx], eax ; ret
+\end{verbatim}
+    \begin{enumerate}[(a)]
+        \item \pts{4} What does \textbf{ROP} stand for, and what instruction does every gadget end in?
+        \answer{\textbf{Return-Oriented Programming}; every gadget ends in \texttt{ret}. \emph{2 + 2.}}
+
+        
+        \item \pts{8} Lay out the stack (the sequence of values the overflow writes) to store value \texttt{V} at address \texttt{ADDR} using these gadgets, and say what each \texttt{ret} does.
+        \answer{Lay the stack as: \texttt{[\&g1] [V] [\&g2] [ADDR] [\&g3]}. On the first \texttt{ret} control enters \texttt{g1}: \texttt{pop eax} takes \texttt{V} off the stack into \texttt{eax}, and \texttt{g1}'s \texttt{ret} pops \texttt{\&g2}. \texttt{g2}: \texttt{pop ebx} takes \texttt{ADDR} into \texttt{ebx}, \texttt{ret} pops \texttt{\&g3}. \texttt{g3}: \texttt{mov [ebx], eax} writes \texttt{V} to \texttt{ADDR}, \texttt{ret} continues to whatever gadget is next. The stack pointer walks down the chain --- the attacker-controlled stack \emph{is} the program, each \texttt{ret} advancing to the next instruction. \emph{5 for the correct five-slot layout in the right order, 3 for explaining the \texttt{ret}-driven execution.}}
+
+        \item \pts{3} Why does NX not stop ROP?
+        \answer{Every gadget is existing, already-executable code in the binary or libc; nothing writable is executed. NX only blocks running injected data, so reusing code sails past it. \emph{3.}}
+
+        \item \pts{5} What does ASLR force the attacker to do first?
+        \answer{Gadget addresses depend on where code is mapped, which ASLR randomizes, so \texttt{\&g1}, \texttt{\&g2} and \texttt{\&g3} are not known in advance. The attacker must first obtain an information leak that discloses a code address, from which the module base and therefore every gadget address follows (or find a module that is not randomized). \emph{2 for ``the addresses are unknown / move every run'', 3 for needing a leak to recover the base.}}
+    \end{enumerate}
+    \gap
+    \note{\textbf{Reused verbatim from Exercises 2, Q6} --- stem, gadget listing and all three parts unchanged. It is the only question reproduced word for word, but note that much of the rest of the paper is close (not verbatim) reuse of Exercises 2 as well, so it is not a clean control. Original wording from the exercises; it is here deliberately, to reward students who worked the sheet.}
+
+%----------------------------------------------------------------------
+\Q[20 points]{Shellcode}
+Instead of reusing existing code, the attacker writes their own machine instructions into the buffer and returns into them.
+    \begin{enumerate}[(a)]
+        \item \pts{4} What is \textbf{shellcode}?
+        \answer{A short sequence of machine instructions the attacker gets into the process as data and then executes; the classic payload spawns a shell (\texttt{/bin/sh}). \emph{4; 2 if they only say ``the attacker's code''.}}
+
+        
+        \item \pts{6} The same bytes are written as data and then executed as code. Explain how that is possible, and state the one assumption about the stack it depends on.
+        \answer{Nothing in memory marks bytes as ``data'' or ``code'' --- the copy writes them as data, and after the overwritten \texttt{ret} transfers control into the buffer the CPU simply fetches and executes them as instructions. This is the same code/data confusion introduced in Lecture 1. It depends on the \textbf{stack page being executable}; with DEP/NX enabled it fails, which is exactly why Lecture 8 moves to code reuse. \emph{4 for the code/data explanation, 2 for naming the executable-stack assumption.}}
+
+        \item \pts{5} Shellcode delivered through a string copy such as \texttt{strcpy} must contain no NUL (\texttt{0x00}) bytes. Why? Give the standard trick for zeroing a register without introducing one, and name one delivery path where the constraint does \emph{not} apply.
+        \answer{Because the overflow is typically delivered through a string copy such as \texttt{strcpy}, which stops at the first NUL --- a zero byte inside the payload would truncate it, so the rest of the shellcode would never be written. The standard trick is to zero a register with \texttt{xor reg, reg} (e.g.\ \texttt{xor eax, eax}) rather than loading an immediate \texttt{0}, since the \texttt{xor} encoding contains no zero byte. The constraint is specific to NUL-terminated copies: a length-driven delivery such as \texttt{memcpy} (as in Question 2) or a \texttt{read()} of \texttt{len} bytes copies zero bytes happily, so shellcode sent that way may contain NULs. \emph{2 for the string-copy truncation reason, 2 for \texttt{xor reg,reg}, 1 for a length-driven delivery path.}}
+
+        \item \pts{5} The classic payload makes a single system call. Which one, and how are the call number and its arguments passed on 32-bit Linux?
+        \answer{\texttt{execve("/bin/sh", NULL, NULL)}, which replaces the running process image with a shell. On 32-bit Linux the system-call number goes in \texttt{eax} and the arguments in \texttt{ebx}, \texttt{ecx}, \texttt{edx}, then the call is made with \texttt{int 0x80}. \emph{2 for \texttt{execve} spawning a shell, 2 for \texttt{eax} + \texttt{ebx/ecx/edx} + \texttt{int 0x80}.}}
+    \end{enumerate}
+    \gap
+
+%----------------------------------------------------------------------
+\Q[20 points]{Attacking the heap}
+    \begin{enumerate}[(a)]
+        \item \pts{4} What does \texttt{free()} do, and what is a \textbf{dangling pointer}?
+        \answer{\texttt{free()} returns a heap allocation to the allocator so the space can be reused. A dangling pointer still points at memory that has already been freed. \emph{2 + 2.}}
+
+        
+        \item \pts{9} An attacker overflows the chunk before chunk \texttt{P} and so controls \texttt{P}'s \texttt{fd} and \texttt{bk}. (i) What does the unlink performed by \texttt{free(P)} hand them? (ii) Name \emph{two distinct} targets they could overwrite with it, and say what each one gives them. (iii) State the check ``safe unlinking'' adds, and why forged pointers fail it.
+        \answer{(i) A \textbf{write-what-where} --- an arbitrary write of a chosen value to a chosen address, because the splice writes using the attacker's \texttt{fd} (value) and \texttt{bk} (target, plus a fixed offset, as on the Lecture 7 slide). (ii) Any two of: a \textbf{function pointer} in a live object (Lecture 7) --- the next indirect call through it is redirected; a \textbf{saved return address} on the stack (Lecture 5) --- the next \texttt{ret} goes to the attacker's address. Also accept a \textbf{GOT entry}, though the GOT is not covered in Lectures 1--10, so do not expect it. (iii) Safe unlinking asserts the list is consistent around \texttt{P}: \texttt{P->fd->bk == P} and \texttt{P->bk->fd == P}. Forged \texttt{fd}/\texttt{bk} cannot satisfy both at once, so \texttt{free()} detects the tampering and aborts. \emph{3 for write-what-where, 3 for two targets with their effects, 3 for the invariant and why it fails.}}
+
+        \item \pts{7} A use-after-free leaves a stale pointer \texttt{b}. Explain why such a bug is often \emph{not} exploitable as it stands, and what the attacker does to make it reliable.
+        \answer{If nothing has reused the freed slot, a write through \texttt{b} merely scribbles on free memory --- there is no victim, so the bug is inert. It becomes exploitable once the allocator hands that slot to an object the attacker cares about, so the write corrupts that object (a write primitive). Since they cannot place objects directly, the attacker \textbf{grooms} (sprays) the heap: issuing many allocations of the right size and type so one reliably reuses the freed slot. \emph{3 inert, 4 grooming/spraying for reliable reuse.}}
+    \end{enumerate}
+    \gap
+
+%----------------------------------------------------------------------
+\Q[20 points]{Defenses}
+    \begin{enumerate}[(a)]
+        \item \pts{3} Name the three \emph{classic} defenses covered in this course.
+        \answer{\textbf{Stack canaries}, \textbf{ASLR}, \textbf{DEP/NX}. \emph{1 each.}}
+
+        
+        \item \pts{4} Give \emph{one} way a stack canary is bypassed.
+        \answer{Leak it and write it back unchanged so the pre-\texttt{ret} check still passes; or corrupt a target a contiguous overflow need not cross the canary to reach (a local pointer, a flag such as \texttt{authed}, heap metadata). \emph{4 for either route, clearly justified.} \emph{Ignore: 1.5, 2.}}
+
+        \item \pts{7} Recall that control hijacking has \emph{two targets}. Name each, name the defense for it, and give one line on how that defense works.
+        \answer{\textbf{The saved return address --- the backward edge}, protected by a \textbf{shadow stack}: each call copies the return address into a separate protected region, and on return the two are compared, aborting on a mismatch (Intel CET implements this in hardware). \textbf{Function pointers / indirect calls --- the forward edge}, protected by \textbf{CFI}: each indirect transfer is restricted to the targets the program's code legally allows, so a pointer overwritten to aim at a gadget falls outside the set and the call is refused. \emph{1.5 per target, 2 per defense with its mechanism.}}
+
+        \item \pts{6} Intel CET enforces only \emph{coarse} CFI on the forward edge. Explain why an attacker can still find a usable target inside the coarse allowed set, and state what fine CFI would additionally check. Does that guarantee the target is excluded?
+        \answer{Coarse CFI permits an indirect call to land on \emph{any} function entry point, so the allowed set is huge --- it still contains functions the attacker finds useful (for example \texttt{system}, \texttt{execve}, or any entry point that advances their chain). The transfer is therefore ``legal'' under the policy even though it is not one the program would ever have made. \textbf{Fine} CFI narrows the set by requiring the target to match the \emph{signature} of the function pointer being called --- the return type and the number and types of the arguments --- so a call through, say, a \texttt{void (*)(void)} pointer can no longer land on \texttt{system(char *)}. \textbf{No, it does not guarantee exclusion:} a gadget whose signature happens to match still passes the check, and a data-only attack never leaves the legal set at all --- which is why Lecture 9 titles the next slide ``CFI Is Not a Complete Fix''. \emph{2 for ``any function entry is allowed, so useful ones remain in the set'', 2 for signature matching, 2 for answering ``no'' with a reason (same-signature gadget, or data-only attack).}}
+    \end{enumerate}
+    \lastgap
+
+%\begin{center}{\small\color{muted}End of exam \textbullet\ 100 points total}\end{center}
+
+\end{document}
