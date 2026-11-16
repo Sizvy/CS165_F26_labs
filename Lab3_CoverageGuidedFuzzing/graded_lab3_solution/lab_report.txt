@@ -1,0 +1,90 @@
+CS 165 Graded Lab 3 Reference Solution
+
+1. Program understanding
+
+An input begins with IMG2; and contains semicolon-terminated key-value fields.
+The parser recognizes GRAY, RGB, and META formats. It accepts INFO directly
+after validating the format and dimensions. CHECK requires the expected number
+of bytes for GRAY or RGB, while META CHECK requires DATA to begin with CS165:.
+THUMB requires AUTH=YES, a non-META format, valid dimensions, and enough DATA
+bytes for width times height times the number of channels.
+
+
+2. Harness
+
+LLVMFuzzerTestOneInput passes the data pointer and size supplied by libFuzzer
+directly to parse_image_message. It calls the parser once and returns zero.
+The harness performs no file I/O, does not terminate the process, and does not
+retain input-specific state, so libFuzzer can call it repeatedly.
+
+
+3. Seed corpus
+
+gray-info.img reaches the GRAY and INFO branches with an empty payload.
+gray-check.img reaches GRAY CHECK with the required six-byte payload.
+rgb-check.img reaches RGB CHECK with the required twelve-byte payload.
+meta-check.img reaches META CHECK and the CS165: prefix branch.
+gray-thumb.img reaches the authorized THUMB branch with a small safe payload.
+
+
+4. Fuzzing without a dictionary
+
+Run duration: Record the assigned duration from the student's run.
+Final cov: Nondeterministic; verify it against the saved run output.
+Final ft: Nondeterministic; verify it against the saved run output.
+Final corpus size: Nondeterministic; verify it against the submitted corpus.
+Crash artifacts produced: Nondeterministic.
+
+
+5. Fuzzing with a dictionary
+
+Run duration: Must match the assigned duration for the first run.
+Final cov: Nondeterministic; verify it against the saved run output.
+Final ft: Nondeterministic; verify it against the saved run output.
+Final corpus size: Nondeterministic; verify it against the submitted corpus.
+Crash artifacts produced: Nondeterministic.
+
+
+6. Crash investigation
+
+The intended finding is an AddressSanitizer heap-buffer-overflow in
+create_thumbnail. Different crash artifacts may exercise the same root cause.
+The artifact should be replayed as one input, producing the same sanitizer
+finding without starting a mutation campaign.
+
+
+7. Crash minimization
+
+Original crash size: Depends on the discovered artifact.
+Minimized crash size: Depends on libFuzzer's minimization result and must be
+smaller than the original.
+
+The minimized input must retain enough structure to reach THUMB with AUTH=YES,
+a GRAY or RGB format, valid dimensions, and a DATA field long enough for the
+calculated byte count. The byte count must exceed 255 so the vulnerable
+uint8_t allocation size wraps or truncates.
+
+
+8. Corpus minimization
+
+Corpus size before minimization: Nondeterministic.
+Corpus size after minimization: Nondeterministic and no larger than before.
+
+Corpus minimization keeps a smaller collection of inputs that preserves the
+useful coverage features represented by the source corpus. It does not try to
+preserve a crash or minimize one particular input.
+
+
+9. Program fix
+
+The vulnerable program converted bytes_needed from size_t to uint8_t before
+calling malloc. Values greater than 255 were truncated, but memcpy still used
+the original bytes_needed value. The solution allocates bytes_needed bytes
+directly:
+
+    uint8_t *thumbnail = malloc(bytes_needed);
+
+This preserves the THUMB operation and ensures the allocation matches the
+number of bytes copied. The normal regression tests must still pass, the saved
+crash inputs must no longer produce a sanitizer finding, and continued fuzzing
+must not rediscover the same overflow.
