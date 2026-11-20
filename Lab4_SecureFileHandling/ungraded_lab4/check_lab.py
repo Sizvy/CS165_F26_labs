@@ -16,8 +16,9 @@ def run_writer(*arguments, input_text=None):
         [str(BINARY), *arguments],
         cwd=lab.ROOT,
         input=input_text,
-        capture_output=True,
-        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
         timeout=5,
     )
 
@@ -53,7 +54,7 @@ def replacement_race():
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True,
+        universal_newlines=True,
     )
     assert process.stdout is not None
     assert process.stdin is not None
