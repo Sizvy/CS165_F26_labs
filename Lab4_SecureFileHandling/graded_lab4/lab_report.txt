@@ -78,15 +78,3 @@ Describe your new publish sequence and explain how it satisfies P1-P6.
 Paste the output of `make test`, `make exploit1`, and `make exploit2`
 against your repaired program, and the results of repeating Step 6.
 
-
-9. Short answers
-
-a. Your repaired publish operation still uses a pathname for rename(). Why
-   is that safe, when pathname-based open() was not?
-
-b. Exploit 1 against your repaired program prints EXPLOIT BLOCKED, but the
-   student's new message is not visible in work/inbox/submission.txt
-   afterwards. Where did the write go, and why is this acceptable?
-
-c. Why does the staging file need a name that an attacker cannot predict,
-   even when it is opened with O_EXCL?
