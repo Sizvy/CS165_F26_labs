@@ -1,0 +1,94 @@
+CS 165 Graded Lab 4 Report — ANSWER KEY (instructor only)
+
+1. Program understanding
+
+update_note(): builds work/inbox/NAME, lstat()s the path and requires a
+regular file, prints CHECKED (pause hook), then open()s the same path again
+with O_WRONLY | O_TRUNC | O_NOFOLLOW and writes MESSAGE + newline.
+
+publish_note(): builds the staging path work/public/.NAME.tmp and the final
+path work/public/NAME, open()s the staging path with O_WRONLY | O_CREAT |
+O_TRUNC and mode 0666, writes the message, closes, unlink()s the final path,
+prints STAGED (pause hook), then rename()s staging -> final.
+
+2. Exploit 1 (update)
+
+  service                               attacker
+  -------                               --------
+  lstat(work/inbox/submission.txt)
+                                        unlink(work/inbox/submission.txt)
+                                        link(work/gradebook.txt,
+                                             work/inbox/submission.txt)
+  open(... O_TRUNC | O_NOFOLLOW)
+
+O_NOFOLLOW only rejects a final component that is a symbolic link. A hard
+link is an ordinary directory entry for the gradebook's inode, so open()
+succeeds, O_TRUNC truncates the gradebook, and the write lands in it. The
+check was made on a different object (the original note) than the one opened.
+
+3. Exploit 2 (publish)
+
+Staging path: work/public/.news.txt.tmp
+
+open() without O_EXCL or O_NOFOLLOW follows the planted symlink, truncates
+the gradebook, and writes the payload into it. rename() then moves the
+symlink itself to the final name, so work/public/news.txt is a symlink to
+../gradebook.txt (it "publishes" the gradebook as well).
+
+4. Permissions and atomic replacement
+
+umask 000 -> -rw-rw-rw- (0666): any user can rewrite the published note.
+umask 077 -> -rw------- (0600): readers cannot read the public note.
+While paused: "No such file or directory". The old version was unlinked
+before the new one was renamed into place. Violates P3 and P4.
+
+5. Requirement analysis
+
+  U1: not violated (no O_CREAT; lstat requires a regular file)
+  U2: not violated by a static symlink (lstat + O_NOFOLLOW); see U4 for races
+  U3: violated — no link-count check anywhere
+  U4: violated — lstat(path) ... open(path) resolve the name twice
+  U5: violated — O_TRUNC in open() truncates before the opened object is checked
+  U6: violated — open() without O_NONBLOCK blocks if a FIFO is swapped in
+  P1: violated — open(staging, O_CREAT | O_TRUNC) reuses/follows existing entries
+  P2: violated — staging name is predictable (.NAME.tmp)
+  P3: violated — mode 0666 filtered by the caller's umask
+  P4: violated — unlink(final) before rename()
+  P5: violated — on rename() failure the staging file is left behind
+  P6: not violated — rename() replaces the link entry (but the unlink is P4)
+
+6. Repair of update
+
+open("work/inbox", O_DIRECTORY); fd = openat(dirfd, NAME, O_WRONLY |
+O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC) without O_CREAT or O_TRUNC; fstat(fd);
+require S_ISREG and st_nlink == 1; CHECKED; ftruncate(fd, 0); write_all.
+The name is resolved once; every check and modification uses the same
+descriptor, so later directory changes cannot redirect it.
+
+7. Repair of publish
+
+fd = mkstemp("work/public/.NAME.XXXXXX") (O_CREAT | O_EXCL, random name,
+mode 0600); fchmod(fd, 0644); write_all; fsync; close; STAGED;
+rename(staging, final). On any failure: unlink(staging). No unlink(final).
+
+8. Validation
+
+make test: all 8 functional tests pass. make exploit1 / make exploit2:
+EXPLOIT BLOCKED. Step 6 repeated: mode 0644 under both umasks; the old
+announcement is printed while publish is paused.
+
+9. Short answers
+
+a. rename() never opens or writes through the destination; it atomically
+   replaces the directory entry. The source is a file this process just
+   created exclusively, and the threat model does not let the attacker
+   remove or rename entries the service created.
+
+b. Into the original note's inode, which the attacker unlinked. The
+   descriptor still refers to it, so the write succeeds but the file has no
+   name. The protected property is integrity of other files (the gradebook
+   is never written), not availability of the note under its name.
+
+c. With a predictable name, O_EXCL makes the attack fail safely, but the
+   attacker can pre-create that name and make every publish fail (denial of
+   service, P2). A random name cannot be planted in advance.

@@ -1,0 +1,92 @@
+CS 165 Graded Lab 4 Report
+
+Student name:
+Net ID:
+
+1. Program understanding
+
+Describe the steps of update_note() and publish_note() in order. For each
+operation, state where the announce_and_pause() hook runs.
+
+
+2. Exploit 1 (update)
+
+Paste the final output of `make exploit1` against the starter program.
+
+Fill in the event ordering:
+
+  service                               attacker
+  -------                               --------
+  lstat(work/inbox/submission.txt)
+                                        
+                                        
+  open(... O_TRUNC | O_NOFOLLOW)
+
+Explain why O_NOFOLLOW did not stop this attack.
+
+
+3. Exploit 2 (publish)
+
+Staging path used by the starter program for news.txt:
+
+Paste the final output of `make exploit2` against the starter program.
+
+After the attack, what is work/public/news.txt, and why?
+
+
+4. Permissions and atomic replacement (Step 6 observations)
+
+Mode of work/public/perm-test.txt after `umask 000`:
+Mode of work/public/perm-test.txt after `umask 077`:
+
+What did `cat work/public/announcement.txt` print while publish was paused?
+
+Explain which publish requirements these observations violate.
+
+
+5. Requirement analysis
+
+For each requirement, give the line(s) of the starter note_service.c that
+violate it, or write "not violated".
+
+  U1:
+  U2:
+  U3:
+  U4:
+  U5:
+  U6:
+  P1:
+  P2:
+  P3:
+  P4:
+  P5:
+  P6:
+
+
+6. Repair of update
+
+Describe your new update sequence and explain how it satisfies U1-U6.
+
+
+7. Repair of publish
+
+Describe your new publish sequence and explain how it satisfies P1-P6.
+
+
+8. Validation
+
+Paste the output of `make test`, `make exploit1`, and `make exploit2`
+against your repaired program, and the results of repeating Step 6.
+
+
+9. Short answers
+
+a. Your repaired publish operation still uses a pathname for rename(). Why
+   is that safe, when pathname-based open() was not?
+
+b. Exploit 1 against your repaired program prints EXPLOIT BLOCKED, but the
+   student's new message is not visible in work/inbox/submission.txt
+   afterwards. Where did the write go, and why is this acceptable?
+
+c. Why does the staging file need a name that an attacker cannot predict,
+   even when it is opened with O_EXCL?
